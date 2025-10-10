@@ -3,9 +3,10 @@ from pydantic import BaseModel, EmailStr, constr, conint
 from enum import Enum
 
 class GenderEnum(str, Enum):
-    male = "Male"
-    female = "Female"
-    other = "Other"
+    Male = "Male"
+    Female = "Female"
+    other = "Other" 
+
 
 class User(BaseModel):
     user_id: int
