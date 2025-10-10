@@ -6,6 +6,10 @@ from .schemas import User
 app = FastAPI()
 users: list[User] = []
 
+@app.get("/")
+def root():
+    return {"message": "Welcome to the Fitness Tracker Users Service"}
+
 @app.get("/api/users")
 def get_users():
     return users
@@ -23,3 +27,19 @@ def add_user(user: User):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="user_id already exists")
     users.append(user)
     return user
+
+@app.put("/api/users/{user_id}", status_code=status.HTTP_200_OK)
+def update_user(user_id: int, updated_user: User):
+    for idx, u in enumerate(users):
+        if u.user_id == user_id:
+            users[idx] = updated_user
+            return updated_user
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found") 
+
+@app.delete("/api/users/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+def Delete_user(user_id: int):
+    for idx, u in enumerate(users):
+        if u.user_id == user_id:
+            users.pop(idx)
+            return {"message": "User has beem deleted"}
+    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
