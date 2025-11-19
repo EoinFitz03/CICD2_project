@@ -1,4 +1,8 @@
-__pycache__/
-.ipynb_checkpoints/
-*.pyc
-venv/
+__pycache__/ 
+*.pyc 
+.env* 
+.git 
+.gitignore 
+/tests/__pycache__/ 
+dist/ 
+build/ 
