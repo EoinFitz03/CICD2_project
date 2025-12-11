@@ -1,19 +1,36 @@
-name: CI
+name: Build & Push Users Image
+
 on:
   push:
-    branches: [master]
-  pull_request:
-    branches: [master]
+    branches: [main]
+  workflow_dispatch:
+
 jobs:
-  build:
+  docker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Python
-        uses: actions/setup-python@v5
+
+      - name: Set image name
+        # ghcr.io/<owner>/<repo>/users
+        run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY,,}/users" >> $GITHUB_ENV
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
         with:
-          python-version: '3.11'
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-      - name: Run tests
-        run: pytest -q || echo "No tests yet, add some next lab!"
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
